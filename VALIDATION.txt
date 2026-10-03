@@ -1,22 +1,38 @@
-Validation scope: SDK-neutral synthetic offline reference, version 0.1.0
+Validation snapshot 2026-10-03
 
-Passed on Python 3.12.14:
-- Editable package build/install: uv pip install -e '.[test]'
-- Syntax compilation: python -m compileall -q thermal_fusion tests
+Python/OpenCV reference 0.1.0:
+- Editable package build/install and Python syntax compilation passed
 - Automated tests: 85 passed
 - Automatic synthetic target calibration: translation, rotation, perspective
 - Independent synthetic noise capture; both thermal contrast polarities
-- Fixture failure paths and unchanged raw/temperature data
-- Visual inspection of generated three-panel synthetic preview
-- Independent code review of geometry/validation/immutability failure paths
+- Failure-path fixtures and unchanged raw/temperature data checks
+- Independent code review, including calibration immutability and input gates
+
+Android 0.2.0:
+- Default SDK-free build: 49 production-core tests, assembleDebug, lintDebug passed
+- Private Guide build against the inspected local AAR: same checks passed
+- lint: 0 errors, 13 non-blocking warnings in each final local build
+- Private APK: signature v1/v2 verified, package org.thermalfusion.app.guide
+- Private APK: minSdk21, targetSdk35, ARM64 native libraries
+- Default APK: no vendor dex classes and no native libraries
+- Runtime dependency license assets included
+- Independent review corrections verified for USB topology changes, stale saved-URI actions,
+  snapshot cancellation, callback ownership and stale-frame invalidation
+- Original vendor APK was inspected statically, not installed or executed
 
 Not run / not established:
-- Android build or APK installation
-- Vendor SDK/ABI/API/license inspection
-- Actual USB capture, clock synchronization or performance
-- Real dual-modal target detectability
-- Real lens distortion, camera calibration or component heat-source localization
-- Temperature accuracy
+- Installation or live USB capture on Xiaomi15 or any phone
+- Emulator/device MediaStore provider, permission UI, OEM gallery or lifecycle validation
+- Hardware capture-clock synchronization
+- Real dual-modal target detectability and real calibration/fusion
+- True optical/source localization accuracy or temperature accuracy
+- Android Camera2, automatic calibration/fusion, raw/temperature export and video
+- USB3 path, unknown device/lens mappings or 16KiB native compatibility
 
-Metrics and complete test log are in outputs/.
-The illustrative pinhole parallax values are model calculations, not rig measurements.
+Important:
+- The current private app is an IR preview and standard-gallery snapshot milestone
+- It does not invoke temperature conversion and does not claim live fusion
+- Receipt timestamps are not exposure timestamps
+- Source minSdk21 is not a certification of every Android5 device
+- Public CI runs the SDK-free build; vendor APKs and SDK files are private inputs/outputs
+- See Android build docs for exact commands and the checked local AAR identity

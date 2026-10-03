@@ -16,7 +16,12 @@ public final class StoragePolicy {
         return api <= 28;
     }
 
+    public static boolean needsRuntimeWritePermission(int api) {
+        requireSupported(api);
+        return api >= 23 && api <= 28;
+    }
+
     private static void requireSupported(int api) {
-        if (api < 23) throw new IllegalArgumentException("Minimum Android API is 23");
+        if (api < 21) throw new IllegalArgumentException("Minimum Android API is 21");
     }
 }

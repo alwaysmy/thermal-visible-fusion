@@ -16,4 +16,10 @@ Checksums were compared to the official endpoints when preparing this starter.
 Gradle distributions and Android build dependencies are downloaded from their respective
 official repositories at build time and remain subject to their own licenses.
 No third-party thermal SDK binaries, documentation, demo source or signing credentials
-are included in this public Android starter.
+are included in this public Android source tree. Optional local Guide builds include
+the user's private SDK input and must not be treated as licensed for public redistribution.
+
+Optional APK runtime dependencies have separate attribution in
+`app/src/main/assets/THIRD_PARTY_RUNTIME.txt` and the full Apache License 2.0 text
+in `app/src/main/assets/LICENSE-APACHE-2.0.txt`; these are accessible through the app's
+“第三方组件与许可” button. Kotlin/Material/AndroidX notices do not license the vendor SDK.

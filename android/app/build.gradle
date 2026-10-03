@@ -1,5 +1,20 @@
 plugins { id 'com.android.application' }
 
+// Opt-in local build only: never commit the licensed vendor AAR or resulting APK.
+def guideAarPath = providers.gradleProperty('guideAar').orNull
+def guideEnabled = guideAarPath != null
+def guideAarFile = guideEnabled ? file(guideAarPath) : null
+if (guideEnabled && !guideAarFile.isFile()) {
+    throw new GradleException('guideAar must name a local, privately supplied Guide SDK AAR')
+}
+if (guideEnabled) {
+    def checksum = java.security.MessageDigest.getInstance('SHA-256')
+            .digest(guideAarFile.bytes).encodeHex().toString()
+    if (checksum != '684789c86e992a10a6e2cf9373275038de261c5ebf8e53264b80566155463035') {
+        throw new GradleException('Unreviewed Guide AAR checksum; review this SDK before changing the pinned hash')
+    }
+}
+
 android {
     namespace 'org.thermalfusion.app'
     compileSdk 35
@@ -7,16 +22,32 @@ android {
 
     defaultConfig {
         applicationId 'org.thermalfusion.app'
-        minSdk 23
+        minSdk 21
         targetSdk 35
         versionCode 1
         versionName '0.1.0-test-pattern'
+        buildConfigField 'boolean', 'GUIDE_SDK_ENABLED', guideEnabled.toString()
+        if (guideEnabled) {
+            applicationIdSuffix '.guide'
+            versionName '0.2.0-guide-local'
+            ndk { abiFilters 'arm64-v8a' }
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
     lint { abortOnError true }
+    buildFeatures { buildConfig true }
+    if (guideEnabled) sourceSets.main.java.srcDir 'src/guide/java'
 }
 
-dependencies { implementation project(':storage-core') }
+dependencies {
+    implementation project(':storage-core')
+    if (guideEnabled) {
+        implementation files(guideAarFile)
+        implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+        // The supplied AAR's resources declare a MaterialComponents theme.
+        implementation 'com.google.android.material:material:1.12.0'
+    }
+}

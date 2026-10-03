@@ -63,6 +63,13 @@ public final class MainActivity extends Activity {
 
         content.addView(label("ThermalFusion", 28, true));
         content.addView(label("Android 图像保存原型 · TEST ONLY", 17, true));
+        if (BuildConfig.GUIDE_SDK_ENABLED) {
+            Button hardware = new Button(this);
+            hardware.setText("进入真实红外 SDK 预览");
+            hardware.setOnClickListener(view -> startActivity(new Intent(this, IrPreviewActivity.class)));
+            content.addView(hardware);
+            content.addView(label("本页仍为测试图。真实红外采集在独立页面，需连接支持的 USB2 模组并授权。", 15, false));
+        }
         TextView hardwareStatus = label("正在检查数据源…", 15, false);
         content.addView(hardwareStatus);
         thermalSource.start(new ThermalSource.Listener() {
@@ -84,7 +91,8 @@ public final class MainActivity extends Activity {
         content.addView(label("保存位置：Pictures/ThermalFusion\n"
                 + (StoragePolicy.usesMediaStore(Build.VERSION.SDK_INT)
                 ? "Android 10+：使用 MediaStore，不申请存储读取或全盘权限"
-                : "Android 6–9：仅保存时请求写入共享存储权限"), 15, false));
+                : Build.VERSION.SDK_INT >= 23 ? "Android 6–9：仅保存时请求写入共享存储权限"
+                : "Android 5：共享存储写入权限在安装时声明"), 15, false));
 
         save = new Button(this);
         save.setText("保存测试图片 / Save image");
@@ -120,6 +128,10 @@ public final class MainActivity extends Activity {
         content.addView(label("原始帧 / 温度导出：当前不可用\n"
                 + "没有真实数据时不生成 raw 或温度值。接入 SDK 后再通过系统“另存为”"
                 + "（SAF CreateDocument）导出 ZIP + JSON，位置由你选择。", 15, false));
+        Button notices = new Button(this);
+        notices.setText("第三方组件与许可");
+        notices.setOnClickListener(view -> LicenseNotice.show(this));
+        content.addView(notices);
         if (state != null) {
             waitingForPermission = state.getBoolean("waitingForPermission", false);
             save.setEnabled(!waitingForPermission);
@@ -128,7 +140,8 @@ public final class MainActivity extends Activity {
 
     private void requestSave() {
         if (activeSave != null || waitingForPermission) return;
-        if (StoragePolicy.needsLegacyWritePermission(Build.VERSION.SDK_INT)
+        restoreSavedUri(null);
+        if (Build.VERSION.SDK_INT >= 23 && StoragePolicy.needsRuntimeWritePermission(Build.VERSION.SDK_INT)
                 && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             waitingForPermission = true;

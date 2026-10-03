@@ -1,12 +1,13 @@
 # ThermalFusion Android：标准图片保存原型
 
-本目录是可构建的原生 Java Android 工程。当前 UI 只显示**合成彩色测试图**，保存后的 PNG 内也有不可误认的 `SYNTHETIC TEST PATTERN` 标识。没有连接厂商 SDK、USB 热像仪或手机相机，没有生成真实原始热帧或温度，也没有实现实时融合。不要把此版当成测温软件。
+本目录是原生 Java Android 工程。**默认构建**不含厂商 SDK，只显示合成彩色测试图，保存后的 PNG 内也有 `SYNTHETIC TEST PATTERN` 标识。另提供[私有 Guide SDK 构建入口](GUIDE_IR_BUILD.md)：仅用户在本地提供已核对 AAR 时，启用独立的真实 USB2 红外预览页面与标准路径拍照。没有手机可见光相机、实时融合或测温功能；不得把显示快照当成温度数据。
 
 ## 保存到哪里
 
 - **Android 10 / API 29 及以上**：用 `MediaStore.Images` 在主共享存储创建图片，目录提示为 `Pictures/ThermalFusion/`。先设置 `IS_PENDING=1`，成功写入、flush、关闭流后，更新为 `IS_PENDING=0`。UI 显示系统返回的实际 `content://…` URI；不伪造物理 `/sdcard` 路径
-- **Android 6–9 / API 23–28**：仅在保存时请求 `WRITE_EXTERNAL_STORAGE`。在系统 `Environment.DIRECTORY_PICTURES` 下建立 `ThermalFusion`，完整写入同目录隐藏临时文件后重命名为 PNG，再调用 MediaScanner。UI 显示实际完整文件路径。拒绝权限不会写文件
-- 文件名含 `ThermalFusion_TEST_ONLY_`、时间和 UUID，避免覆盖旧照片
+- **Android 5–9 / API 21–28**：在系统 `Environment.DIRECTORY_PICTURES` 下建立 `ThermalFusion`，完整写入同目录隐藏临时文件后重命名为 PNG，再调用 MediaScanner。API 21–22 的写入权限在安装时声明；API 23–28 仅在保存时请求运行时写入权限。UI 显示实际完整文件路径。拒绝权限不会写文件
+- 测试图文件名含 `ThermalFusion_TEST_ONLY_`，真实 SDK 显示快照含 `ThermalFusion_IR_PREVIEW_`，均带时间和 UUID，避免覆盖旧照片
+- Android 10+ 保存成功后可以“打开”或通过系统选择器“分享”；只给所选应用本次 content URI 的读取授权。旧系统显示完整路径，不发送不安全的 `file://` URI
 - 插入失败、null 输出流、编码返回 false、写入/flush/close/发布异常，或提交前取消，都会清理当前未完成项。清理失败会把定位信息作为警告显示，不会假报成功
 - “取消”在发布提交点之前有效；发布开始之后，最终结果会按保存成功或失败报告。重复点击保存被禁用。离开/旋转销毁页面会取消尚未发布的事务
 - Android 29+ 不申请存储权限；没有 `READ_MEDIA_*`、`MANAGE_EXTERNAL_STORAGE`、`requestLegacyExternalStorage`、相机、网络或 USB 权限
@@ -26,7 +27,7 @@ export ANDROID_HOME=/your/existing/android/sdk
 
 APK：`app/build/outputs/apk/debug/app-debug.apk`。这是 Gradle 的调试签名，不含任何厂商签名配置或私钥。Windows 使用 `gradlew.bat`。
 
-固定工具版本：AGP 8.9.2、Gradle 8.11.1、compile/target SDK 35、min SDK 23。Gradle distribution SHA-256 固定于 wrapper properties，wrapper JAR 也由静态测试核对官方发布校验值。版本兼容性见 [Android AGP 8.9 官方说明](https://developer.android.com/build/releases/agp-8-9-0-release-notes)。
+固定工具版本：AGP 8.9.2、Gradle 8.11.1、compile/target SDK 35、min SDK 21。API 23+ 的权限和 PendingIntent 标记均做版本保护。最低版本是编译/静态兼容目标，不等于每款 Android 5 手机通过了实机测试。Gradle distribution SHA-256 固定于 wrapper properties，wrapper JAR 也由静态测试核对官方发布校验值。版本兼容性见 [Android AGP 8.9 官方说明](https://developer.android.com/build/releases/agp-8-9-0-release-notes)。
 
 ### 不需要 Android SDK 的本地测试
 
@@ -35,7 +36,7 @@ cd android
 bash scripts/test-core.sh
 ```
 
-需要 JDK 的 `javac`、`java` 和 Python 3。测试运行 **实际被 Android 使用的** `GalleryTransaction` / `SaveCancellation` / `StoragePolicy`，包含 23 项成功、失败、null、取消竞态、清理异常和版本边界用例。附加静态检查核对 manifest 权限和实际 Android 适配器的关键调用；这不替代 ContentResolver 或手机实测。
+需要 JDK 的 `javac`、`java` 和 Python 3。测试运行 **实际被 Android 使用的**生产逻辑：24 项保存事务/权限版本测试，以及 25 项 UYVY 转换/主机接收帧新鲜度测试，共 49 项。附加静态检查核对 manifest 权限和实际 Android 适配器的关键调用；这不替代 ContentResolver、SDK 或手机实测。
 
 ### GitHub Actions 要求
 
@@ -48,10 +49,11 @@ bash scripts/test-core.sh
 - `storage-core/`：无 Android 依赖的生产事务与可执行测试
 - `app/.../sdk/ThermalSource.java`：SDK 中立帧契约，缓冲区防御性复制
 - `UnavailableThermalSource`：明确无硬件，绝不把测试图回调成真实帧
-- `UsbPermissionCoordinator`：未接到 UI 的独立授权入口；包名限定 + immutable PendingIntent、API 33+ 私有动态 receiver、重新核对选定设备与 `UsbManager.hasPermission`、结束时取消/注销。授权回调不依赖可变 Intent extras；不调用厂商权限 helper，等待实机验证后再接入
+- `UsbPermissionCoordinator`：独立授权入口；包名限定、API 23+ immutable PendingIntent、API 33+ 私有动态 receiver、重新核对选定设备与 `UsbManager.hasPermission`、结束时取消/注销。授权回调不依赖可变 Intent extras，不调用厂商权限 helper
+- `IrPreviewActivity` / `app/src/guide/`：可选真实硬件 UI 与原创 SDK 适配器，见 [GUIDE_IR_BUILD.md](GUIDE_IR_BUILD.md)
 - [EXPORT_DESIGN.md](EXPORT_DESIGN.md)：未来真实 raw/温度导出的 SAF 设计，**尚未实现导出功能**
 
-厂商 AAR/SO、文档、原厂源码、demo 签名配置均不得放到公共仓库。接口层是本项目原创代码；当前构建不读取私有 SDK。未来适配应保留无厂商依赖的默认构建，先核实分发许可和真实硬件行为。
+厂商 AAR/SO、文档、原厂源码、demo 签名配置均不得放到公共仓库。接口和适配层是本项目原创代码；默认构建不读取私有 SDK。真实预览构建仍需私有提供 AAR；不得将含 SDK 的 APK 发到公共 release/artifact，除非其分发权已确认。
 
 ## 验证边界
 

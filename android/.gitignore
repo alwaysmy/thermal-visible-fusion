@@ -4,6 +4,7 @@ local.properties
 .idea/
 *.iml
 private-sdk/
+vendor-libs/
 app/libs/
 app/src/main/jniLibs/
 *.keystore

@@ -10,3 +10,9 @@ tasks.register('verifyStorage', JavaExec) {
     mainClass = 'org.thermalfusion.storage.StorageCoreTest'
 }
 tasks.named('check') { dependsOn verifyStorage }
+tasks.register('verifyPreview', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.thermalfusion.preview.PreviewCoreTest'
+}
+tasks.named('check') { dependsOn verifyPreview }

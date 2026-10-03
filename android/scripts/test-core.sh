@@ -6,4 +6,5 @@ trap 'rm -rf "$out"' EXIT
 find storage-core/src/main/java storage-core/src/test/java -name '*.java' -print0 |
   xargs -0 javac --release 17 -d "$out"
 java -cp "$out" org.thermalfusion.storage.StorageCoreTest
+java -cp "$out" org.thermalfusion.preview.PreviewCoreTest
 python3 scripts/check-storage-policy.py

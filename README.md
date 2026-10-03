@@ -2,7 +2,7 @@
 
 Experimental fixed-plane registration of a USB thermal camera and an Android rear camera, with a Python/OpenCV reference and an Android integration path.
 
-这是一个进行中的公开项目。目标是固定支架、固定工作距离下的 PCB 热源辅助定位。当前可验证的是离线算法；真实双模态标定靶、厂商 SDK、手机 USB 和测温都需要单独验证。融合不增加热像头的实际分辨率，也不生成或修改温度值。
+这是一个进行中的公开项目。目标是固定支架、固定工作距离下的 PCB 热源辅助定位。当前已验证离线算法、Android 编译与软件逻辑测试；真实双模态标定靶、手机 USB 和测温都需要单独验证。融合不增加热像头的实际分辨率，也不生成或修改温度值。
 
 ## 当前状态
 
@@ -11,9 +11,9 @@ Experimental fixed-plane registration of a USB thermal camera and an Android rea
 | Python/OpenCV 自动标记检测、RANSAC 配准和质量检查 | 已实现，85 项离线测试通过 |
 | 纯红外、可见光透明叠加、可见光边缘 | 已实现离线参考 |
 | 几何配置绑定、不同步/过期拒绝、原始值保护 | 已实现离线参考 |
-| Android 标准相册保存和应用骨架 | 实现中，尚未验证 APK |
+| Android 标准相册保存和应用骨架 | 默认版与私有 SDK 版均已编译；49 项核心测试、lint 通过 |
 | 原厂 demo 存储分析 | 已查明目标版本路径，见下方文档 |
-| 厂商 SDK 接入 | 已确认接口与 ARM ABI；适配实现中，厂商文件不在仓库 |
+| 私有 SDK 红外预览 | USB2 原创适配、ARM64/API21+ 测试 APK 已构建；尚未手机实测 |
 | 手机硬件采集、真实标定、定位精度和测温 | 尚未验证 |
 
 ## 运行离线核心
@@ -50,7 +50,10 @@ Android 实现采用以下约定：
 ## 文档
 
 - [离线参考说明](docs/REFERENCE_README.md)
-- [Android 接入与验收](docs/ANDROID_INTEGRATION.md)
+- [Android 项目与构建](android/README.md)
+- [私有 SDK 适配状态和边界](docs/SDK_INTEGRATION_STATUS.md)
+- [私有红外版本构建与手机操作](android/GUIDE_IR_BUILD.md)
+- [完整融合接入与验收计划](docs/ANDROID_INTEGRATION.md)
 - [真实采集协议](docs/CAPTURE_PROTOCOL.md)
 - [原厂 demo 保存位置](docs/STOCK_DEMO_STORAGE.md)
 - [验证范围](VALIDATION.txt)
@@ -58,6 +61,6 @@ Android 实现采用以下约定：
 
 ## 厂商 SDK 和隐私
 
-不要向本公开仓库上传厂商 SDK/APK、授权文件、序列号、凭据、私人热图或手机照片。厂商文件仅放在本地被忽略的 `private_inputs/` 或 `vendor_sdk/`，依据厂商许可使用。后续接入说明会列出所需文件，仓库本身不重新分发。
+不要向本公开仓库上传厂商 SDK/APK、授权文件、序列号、凭据、私人热图或手机照片。厂商文件仅放在本地被忽略的 `private_inputs/` 或 `vendor_sdk/`，依据厂商许可使用。私有构建说明列出了所需本地文件，仓库本身不重新分发。
 
 公开源码尚未指定开源许可证；第三方组件仍受各自许可证约束。

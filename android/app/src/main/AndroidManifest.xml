@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Only legacy Android 6–9 writing to shared Pictures needs this. -->
+    <!-- Legacy Android 5–9 shared Pictures only; runtime request starts at API 23. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <application android:label="ThermalFusion" android:theme="@style/AppTheme"
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <application android:label="ThermalFusion" android:theme="@style/AppTheme" android:icon="@drawable/ic_launcher"
         android:allowBackup="false" android:supportsRtl="true">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
@@ -11,5 +12,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".IrPreviewActivity" android:exported="false" />
     </application>
 </manifest>

@@ -33,8 +33,17 @@ public final class ImageSaver {
     public ImageSaver(Context context) { this.context = context.getApplicationContext(); }
 
     public SavedImage saveTestPattern(Bitmap bitmap, SaveCancellation cancellation) throws IOException {
-        if (bitmap == null || bitmap.isRecycled()) throw new IOException("No valid test image to save");
-        String name = "ThermalFusion_TEST_ONLY_"
+        return save(bitmap, "TEST_ONLY", cancellation);
+    }
+
+    /** Actual display snapshot only; this is not raw or a radiometric temperature export. */
+    public SavedImage saveInfraredPreview(Bitmap bitmap, SaveCancellation cancellation) throws IOException {
+        return save(bitmap, "IR_PREVIEW", cancellation);
+    }
+
+    private SavedImage save(Bitmap bitmap, String sourceTag, SaveCancellation cancellation) throws IOException {
+        if (bitmap == null || bitmap.isRecycled()) throw new IOException("No valid image to save");
+        String name = "ThermalFusion_" + sourceTag + "_"
                 + new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.ROOT).format(new Date())
                 + "_" + UUID.randomUUID() + ".png";
         GalleryTransaction.Encoder encoder = output -> bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
@@ -44,9 +53,9 @@ public final class ImageSaver {
             // A content URI is the durable public locator. Never invent a /sdcard path on 29+.
             return new SavedImage(uri.toString(), "MediaStore 目录提示：" + StoragePolicy.RELATIVE_PATH);
         }
-        if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (context.getPackageManager().checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, context.getPackageName())
                 != PackageManager.PERMISSION_GRANTED) {
-            throw new IOException("Android 6–9 needs storage permission to save in shared Pictures");
+            throw new IOException("Android 5–9 needs storage permission to save in shared Pictures");
         }
         LegacyEntry entry = new GalleryTransaction<LegacyEntry>().save(
                 new LegacyDestination(name), encoder, cancellation);

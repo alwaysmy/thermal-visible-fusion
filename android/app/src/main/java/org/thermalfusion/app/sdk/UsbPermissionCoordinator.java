@@ -74,8 +74,9 @@ public final class UsbPermissionCoordinator implements AutoCloseable {
             else context.registerReceiver(receiver, filter);
             registered = true;
             Intent response = new Intent(action).setPackage(context.getPackageName());
-            permissionIntent = PendingIntent.getBroadcast(context, 0, response,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            int flags = PendingIntent.FLAG_CANCEL_CURRENT;
+            if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+            permissionIntent = PendingIntent.getBroadcast(context, 0, response, flags);
             handler.postDelayed(timeout, 120_000L);
             manager.requestPermission(device, permissionIntent);
         } catch (RuntimeException failure) {

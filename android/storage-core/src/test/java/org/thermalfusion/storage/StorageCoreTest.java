@@ -117,18 +117,28 @@ public final class StorageCoreTest {
         test("legacy Android 23–28 alone needs write permission", () -> {
             for (int api = 23; api <= 28; api++) {
                 truth(StoragePolicy.needsLegacyWritePermission(api), "legacy permission " + api);
+                truth(StoragePolicy.needsRuntimeWritePermission(api), "runtime permission " + api);
                 truth(!StoragePolicy.usesMediaStore(api), "legacy path " + api);
+            }
+        });
+        test("Android 21–22 uses install-time write permission without runtime prompt", () -> {
+            for (int api = 21; api <= 22; api++) {
+                truth(StoragePolicy.needsLegacyWritePermission(api), "install-time permission " + api);
+                truth(!StoragePolicy.needsRuntimeWritePermission(api), "no runtime API " + api);
+                truth(!StoragePolicy.usesMediaStore(api), "legacy save " + api);
             }
         });
         test("Android 29+ needs no storage permission", () -> {
             for (int api = 29; api <= 100; api++) {
                 truth(!StoragePolicy.needsLegacyWritePermission(api), "no storage permission " + api);
+                truth(!StoragePolicy.needsRuntimeWritePermission(api), "no runtime permission " + api);
                 truth(StoragePolicy.usesMediaStore(api), "modern destination " + api);
             }
         });
         test("unsupported Android and expected album", () -> {
-            expect(IllegalArgumentException.class, () -> StoragePolicy.usesMediaStore(22));
-            expect(IllegalArgumentException.class, () -> StoragePolicy.needsLegacyWritePermission(22));
+            expect(IllegalArgumentException.class, () -> StoragePolicy.usesMediaStore(20));
+            expect(IllegalArgumentException.class, () -> StoragePolicy.needsLegacyWritePermission(20));
+            expect(IllegalArgumentException.class, () -> StoragePolicy.needsRuntimeWritePermission(20));
             equal("Pictures/ThermalFusion/", StoragePolicy.RELATIVE_PATH);
         });
         System.out.println("PASS: " + passed + " storage transaction and version-policy tests");
