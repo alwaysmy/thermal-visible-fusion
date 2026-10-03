@@ -9,7 +9,8 @@ ns = '{http://schemas.android.com/apk/res/android}'
 manifest = ET.parse(root / 'app/src/main/AndroidManifest.xml').getroot()
 permissions = [(p.attrib[ns + 'name'], p.attrib.get(ns + 'maxSdkVersion'))
                for p in manifest.findall('uses-permission')]
-assert permissions == [('android.permission.WRITE_EXTERNAL_STORAGE', '28')], permissions
+assert permissions == [('android.permission.WRITE_EXTERNAL_STORAGE', '28'),
+                       ('android.permission.CAMERA', None)], permissions
 source = (root / 'app/src/main/java/org/thermalfusion/app/storage/ImageSaver.java').read_text()
 assert 'MediaStore.Images.Media.IS_PENDING, 1' in source
 assert 'MediaStore.Images.Media.IS_PENDING, 0' in source

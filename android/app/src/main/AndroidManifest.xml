@@ -3,6 +3,10 @@
     <!-- Legacy Android 5–9 shared Pictures only; runtime request starts at API 23. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+    <!-- Used only after explicit start on the independent dual-preview screen. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
     <application android:label="ThermalFusion" android:theme="@style/AppTheme" android:icon="@drawable/ic_launcher"
         android:allowBackup="false" android:supportsRtl="true">
@@ -13,5 +17,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".IrPreviewActivity" android:exported="false" />
+        <activity android:name=".DualPreviewActivity" android:exported="false" />
     </application>
 </manifest>

@@ -14,7 +14,7 @@ The Android code offers an SDK-free default build and an opt-in private vendor b
 - PNG snapshot to shared Pictures/ThermalFusion using the same tested storage transaction
 - Temperature conversion disabled, because the actual module/lens mapping must not be guessed
 
-This is an infrared preview and storage milestone. Camera2 visible capture, live automatic calibration/fusion, video recording and raw/temperature SAF export are not implemented in this Android UI. The Python code remains the separate geometric reference.
+The delivered 0.2.0 APK is an infrared preview and storage milestone. This development branch additionally implements [Camera2 capture and independent dual-preview source](../android/DUAL_PREVIEW.md), with no replacement APK delivery or phone-validation claim. Live automatic calibration/fusion, video recording and raw/temperature SAF export are not implemented. The Python code remains the separate geometric reference.
 
 ## Compatibility findings from static inspection
 
@@ -32,7 +32,7 @@ The inspected vendor example's fixed measurement arguments correspond to a speci
 
 ## Future automatic-fusion integration
 
-Static build strings identify the vendor-bundled `libopencv_java4.so` as OpenCV4.1.0, without an ArUco module/JNI export. Do not drop a second modern OpenCV library with the same native name into the APK and assume compatibility. Camera2 capture/geometry metadata and the pairing state machine can proceed independently. The automatic target-detection backend needs an explicit isolation or compatible-library plan before Android integration.
+Static build strings identify the vendor-bundled `libopencv_java4.so` as OpenCV4.1.0, without an ArUco module/JNI export. Do not drop a second modern OpenCV library with the same native name into the APK and assume compatibility. Camera2 capture/geometry metadata and receipt-diagnostic lifecycle gates have now been implemented independently in this source branch. The automatic target-detection backend needs an explicit isolation or compatible-library plan before Android integration.
 
 The current IR milestone does not close the automatic-fusion goal. A real successful USB frame, actual dimensions/mode, visible frame and fixed-rig calibration capture are still needed to validate geometry and thermal target visibility.
 

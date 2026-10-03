@@ -16,3 +16,15 @@ tasks.register('verifyPreview', JavaExec) {
     mainClass = 'org.thermalfusion.preview.PreviewCoreTest'
 }
 tasks.named('check') { dependsOn verifyPreview }
+tasks.register('verifyDualPreview', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.thermalfusion.preview.DualPreviewCoreTest'
+}
+tasks.named('check') { dependsOn verifyDualPreview }
+tasks.register('verifyCameraYuv', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.thermalfusion.camera.Yuv420ConverterTest'
+}
+tasks.named('check') { dependsOn verifyCameraYuv }

@@ -20,7 +20,7 @@ public final class GuideRuntimeCheck {
     }
 
     public static String blockingReason() {
-        if (!BuildConfig.GUIDE_SDK_ENABLED) return "此 APK 未包含私有 Guide SDK；仅提供合成图保存测试";
+        if (!BuildConfig.GUIDE_SDK_ENABLED) return "此构建未包含私有 Guide SDK；红外不可用，可单独使用手机后摄预览和测试图保存";
         if (!Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a")) return "当前私有版本仅包含 ARM64 SDK，设备 ABI 不支持";
         long size = pageSize();
         if (size != 4096) return "当前 SDK 的 libmt_android.so 仅验证为 4KiB ELF 对齐，"

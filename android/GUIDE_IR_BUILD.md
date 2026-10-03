@@ -14,7 +14,7 @@ cd android
   -PguideAar=/your/private/path/lib_sdk_1.0.1-release.aar
 ```
 
-JDK 17、官方 Android platform 35 / Build Tools 35.0.0；SDK 条款由操作者接受。当前私有 APK 包名 `org.thermalfusion.app.guide`，ARM64，minSdk21 / targetSdk35，版本 `0.2.0-guide-local`。输出 `app/build/outputs/apk/debug/app-debug.apk`。默认测试版包名 `org.thermalfusion.app`，两者可以并存。默认/私有构建会使用同一输出路径，留存时请明确重命名，并核对 APK package/version 后再交付。
+JDK 17、官方 Android platform 35 / Build Tools 35.0.0；SDK 条款由操作者接受。当前私有 APK 包名 `org.thermalfusion.app.guide`，ARM64，minSdk21 / targetSdk35，此开发分支构建版本 `0.3.0-guide-dual-preview-source`（先前已交付的 `0.2.0-guide-local` APK 保持不变）。输出 `app/build/outputs/apk/debug/app-debug.apk`。默认测试版包名 `org.thermalfusion.app`，两者可以并存。默认/私有构建会使用同一输出路径，留存时请明确重命名，并核对 APK package/version 后再交付。
 
 Kotlin 标准库和 MaterialComponents 只用于私有构建的 SDK 依赖兼容；应用 UI 本身仍是原生 Java/Android 控件。SDK 所附资源引用了 MaterialComponents 主题。无厂商签名私钥或原厂 APK 拆出依赖。
 
@@ -40,6 +40,6 @@ Kotlin 标准库和 MaterialComponents 只用于私有构建的 SDK 依赖兼容
 - `Os.sysconf(_SC_PAGESIZE)` 在加载任何 SDK 类前检查实际系统内存页。当前供应库只验证了 4KiB ELF 对齐：非 4096 字节模式一律阻止加载，需要厂商更新适配库。APK zipalign 与 native ELF 对齐是两件事，不能用 zipalign 宣称修复 16KiB 兼容性
 - SDK 为 ARM64/ARMv7，本私有版本仅打包 ARM64。没有 x86 原生库，不能把 x86 模拟器成功启动当作 SDK 验证
 - 最低 Android 5 / API21 是工程兼容目标；API21–22 安装时存储权限，23–28 运行时写入权限，29+ 自建媒体无需存储权限。旧系统和每款 USB 主机能力仍须实测
-- 没有 Camera2 可见光、自动标定、图像融合、原始数据导出、已验证测温、视频保存或厂商兼容性认证
+- 此分支另有 [Camera2 / 双路独立预览源码](DUAL_PREVIEW.md)，尚未手机实测；没有自动标定、图像融合、原始数据导出、已验证测温、视频保存或厂商兼容性认证
 
 APK 编译成功只证明构建产物生成。还需在目标 Xiaomi 15 的实际 HyperOS/Android/页大小环境安装、授权并连接实机，核对尺寸、帧更新、插拔、后台/旋转、保存结果和热靶显示；未做这些验证时不能声称真机已通过。

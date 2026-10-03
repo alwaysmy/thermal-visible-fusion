@@ -1,6 +1,8 @@
+> Development branch: see [Camera2 / independent dual preview](DUAL_PREVIEW.md). The previously delivered 0.2.0 IR APK is unchanged; this branch adds source and checks, not a new phone-tested release.
+
 # ThermalFusion Android：标准图片保存原型
 
-本目录是原生 Java Android 工程。**默认构建**不含厂商 SDK，只显示合成彩色测试图，保存后的 PNG 内也有 `SYNTHETIC TEST PATTERN` 标识。另提供[私有 Guide SDK 构建入口](GUIDE_IR_BUILD.md)：仅用户在本地提供已核对 AAR 时，启用独立的真实 USB2 红外预览页面与标准路径拍照。没有手机可见光相机、实时融合或测温功能；不得把显示快照当成温度数据。
+本目录是原生 Java Android 工程。**默认构建**不含厂商 SDK，可独立使用手机后摄预览；主页仍显示合成彩色测试图，保存后的 PNG 内也有 `SYNTHETIC TEST PATTERN` 标识。另提供[私有 Guide SDK 构建入口](GUIDE_IR_BUILD.md)：仅用户在本地提供已核对 AAR 时，启用独立的真实 USB2 红外预览页面与标准路径拍照。Camera2 与可选红外双路页面只做独立预览，没有实时融合或测温功能；不得把显示快照当成温度数据。
 
 ## 保存到哪里
 
@@ -10,7 +12,7 @@
 - Android 10+ 保存成功后可以“打开”或通过系统选择器“分享”；只给所选应用本次 content URI 的读取授权。旧系统显示完整路径，不发送不安全的 `file://` URI
 - 插入失败、null 输出流、编码返回 false、写入/flush/close/发布异常，或提交前取消，都会清理当前未完成项。清理失败会把定位信息作为警告显示，不会假报成功
 - “取消”在发布提交点之前有效；发布开始之后，最终结果会按保存成功或失败报告。重复点击保存被禁用。离开/旋转销毁页面会取消尚未发布的事务
-- Android 29+ 不申请存储权限；没有 `READ_MEDIA_*`、`MANAGE_EXTERNAL_STORAGE`、`requestLegacyExternalStorage`、相机、网络或 USB 权限
+- Android 29+ 不申请存储权限；没有 `READ_MEDIA_*`、`MANAGE_EXTERNAL_STORAGE`、`requestLegacyExternalStorage`或网络权限。手机后摄单独申请 CAMERA，USB 设备通过系统授权对话框申请
 
 系统进程被强杀、断电等无法执行 Java 清理的情况尚未实现持久化恢复：可能留下等待系统处理的 pending MediaStore 项或旧设备隐藏临时文件。当前事务测试不等同于设备断电测试。相册应用是否立即展示图片也取决于系统媒体索引。
 
@@ -36,11 +38,11 @@ cd android
 bash scripts/test-core.sh
 ```
 
-需要 JDK 的 `javac`、`java` 和 Python 3。测试运行 **实际被 Android 使用的**生产逻辑：24 项保存事务/权限版本测试，以及 25 项 UYVY 转换/主机接收帧新鲜度测试，共 49 项。附加静态检查核对 manifest 权限和实际 Android 适配器的关键调用；这不替代 ContentResolver、SDK 或手机实测。
+需要 JDK 的 `javac`、`java` 和 Python 3。测试运行 **实际被 Android 使用的**生产逻辑：24 项保存事务/权限版本测试、25 项 UYVY/新鲜度测试、52 项双路生命周期/几何/时钟测试，共 101 项，另有 31 项 YUV 平面/步长/裁剪断言。附加静态检查核对 manifest 权限和实际 Android 适配器的关键调用；这不替代 ContentResolver、SDK 或手机实测。
 
 ### GitHub Actions 要求
 
-在仓库根目录工作流使用 `ubuntu-latest`、`actions/setup-java`（Temurin 17）和预装 Android SDK。先断言 `$ANDROID_HOME/platforms/android-35/android.jar` 与 `$ANDROID_HOME/build-tools/35.0.0/aapt2` 存在；缺失则清楚失败，不自动接受新 SDK 许可。依次执行上面测试和 Gradle 命令。建议上传 APK、`app/build/reports/lint-results-debug.html`。
+在仓库根目录工作流使用 `ubuntu-latest`、`actions/setup-java`（Temurin 17）和预装 Android SDK。先断言 `$ANDROID_HOME/platforms/android-35/android.jar` 与 `$ANDROID_HOME/build-tools/35.0.0/aapt2` 存在；缺失则清楚失败，不自动接受新 SDK 许可。依次执行上面测试和 Gradle 命令。当前工作流只验证源码与构建，不上传 APK。私有 SDK 版不得进入公开制品。
 
 ## 代码边界
 
@@ -50,6 +52,7 @@ bash scripts/test-core.sh
 - `app/.../sdk/ThermalSource.java`：SDK 中立帧契约，缓冲区防御性复制
 - `UnavailableThermalSource`：明确无硬件，绝不把测试图回调成真实帧
 - `UsbPermissionCoordinator`：独立授权入口；包名限定、API 23+ immutable PendingIntent、API 33+ 私有动态 receiver、重新核对选定设备与 `UsbManager.hasPermission`、结束时取消/注销。授权回调不依赖可变 Intent extras，不调用厂商权限 helper
+- `DualPreviewActivity` / `app/.../camera/`：后摄选择与独立双路图像、逐帧诊断，见 [DUAL_PREVIEW.md](DUAL_PREVIEW.md)
 - `IrPreviewActivity` / `app/src/guide/`：可选真实硬件 UI 与原创 SDK 适配器，见 [GUIDE_IR_BUILD.md](GUIDE_IR_BUILD.md)
 - [EXPORT_DESIGN.md](EXPORT_DESIGN.md)：未来真实 raw/温度导出的 SAF 设计，**尚未实现导出功能**
 

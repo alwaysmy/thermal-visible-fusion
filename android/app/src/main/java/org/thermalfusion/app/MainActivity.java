@@ -63,6 +63,10 @@ public final class MainActivity extends Activity {
 
         content.addView(label("ThermalFusion", 28, true));
         content.addView(label("Android 图像保存原型 · TEST ONLY", 17, true));
+        Button dualPreview = new Button(this);
+        dualPreview.setText("后置相机 / 双路独立预览（尚未融合）");
+        dualPreview.setOnClickListener(view -> startActivity(new Intent(this, DualPreviewActivity.class)));
+        content.addView(dualPreview);
         if (BuildConfig.GUIDE_SDK_ENABLED) {
             Button hardware = new Button(this);
             hardware.setText("进入真实红外 SDK 预览");
@@ -87,7 +91,7 @@ public final class MainActivity extends Activity {
         image.setContentDescription("合成彩色方块测试图；不是热像采集，不包含实测温度");
         content.addView(image, new LinearLayout.LayoutParams(-1, -2));
         content.addView(label("此图为合成测试图。保存后的 PNG 也带有 TEST PATTERN 标记。"
-                + "尚未实现手机相机采集、USB 热像预览、标定或融合。", 15, false));
+                + "手机相机与可选 USB 红外采集在独立预览页面；尚未实现手机端标定或融合。", 15, false));
         content.addView(label("保存位置：Pictures/ThermalFusion\n"
                 + (StoragePolicy.usesMediaStore(Build.VERSION.SDK_INT)
                 ? "Android 10+：使用 MediaStore，不申请存储读取或全盘权限"

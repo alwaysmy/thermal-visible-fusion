@@ -8,7 +8,7 @@ Python/OpenCV reference 0.1.0:
 - Failure-path fixtures and unchanged raw/temperature data checks
 - Independent code review, including calibration immutability and input gates
 
-Android 0.2.0:
+Delivered Android 0.2.0 (unchanged):
 - Default SDK-free build: 49 production-core tests, assembleDebug, lintDebug passed
 - Private Guide build against the inspected local AAR: same checks passed
 - lint: 0 errors, 13 non-blocking warnings in each final local build
@@ -20,13 +20,26 @@ Android 0.2.0:
   snapshot cancellation, callback ownership and stale-frame invalidation
 - Original vendor APK was inspected statically, not installed or executed
 
+Development branch Android 0.3.0 dual-preview source:
+- Python reference: 85 tests passed again
+- Java core: 101 tests (24 storage, 25 preview, 52 dual lifecycle/geometry/clock)
+- Additional YUV plane/stride/crop converter: 31 assertions passed
+- SDK-free and pinned private Guide: storage-core check, assembleDebug, lintDebug passed
+- Lint: 0 errors, 20 non-blocking warnings per local variant
+- Independent static review: wrong VisibleFrame reference, rotation race and optional
+  autofocus declaration corrected and rechecked
+- New Camera2/dual-preview APK outputs used only as compile checks; not delivered
+- Delivered 0.2.0 private APK SHA-256 remains:
+  145ed84e1591a736966d998a5012b5368dc8bdc90a0527539023a5f3b74fe5a3
+
 Not run / not established:
 - Installation or live USB capture on Xiaomi15 or any phone
 - Emulator/device MediaStore provider, permission UI, OEM gallery or lifecycle validation
 - Hardware capture-clock synchronization
 - Real dual-modal target detectability and real calibration/fusion
 - True optical/source localization accuracy or temperature accuracy
-- Android Camera2, automatic calibration/fusion, raw/temperature export and video
+- Actual Camera2 service/permission UI/camera plus USB concurrency on a device
+- Android automatic calibration/fusion, raw/temperature export and video
 - USB3 path, unknown device/lens mappings or 16KiB native compatibility
 
 Important:

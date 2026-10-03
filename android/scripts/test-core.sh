@@ -7,4 +7,6 @@ find storage-core/src/main/java storage-core/src/test/java -name '*.java' -print
   xargs -0 javac --release 17 -d "$out"
 java -cp "$out" org.thermalfusion.storage.StorageCoreTest
 java -cp "$out" org.thermalfusion.preview.PreviewCoreTest
+java -cp "$out" org.thermalfusion.preview.DualPreviewCoreTest
+java -cp "$out" org.thermalfusion.camera.Yuv420ConverterTest
 python3 scripts/check-storage-policy.py

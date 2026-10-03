@@ -14,6 +14,7 @@ Experimental fixed-plane registration of a USB thermal camera and an Android rea
 | Android 标准相册保存和应用骨架 | 默认版与私有 SDK 版均已编译；49 项核心测试、lint 通过 |
 | 原厂 demo 存储分析 | 已查明目标版本路径，见下方文档 |
 | 私有 SDK 红外预览 | USB2 原创适配、ARM64/API21+ 测试 APK 已构建；尚未手机实测 |
+| Camera2 后摄选择与双路独立预览 | 当前开发分支已实现源码；时钟/几何诊断、生命周期门控，尚未手机实测 |
 | 手机硬件采集、真实标定、定位精度和测温 | 尚未验证 |
 
 ## 运行离线核心
@@ -53,6 +54,7 @@ Android 实现采用以下约定：
 - [Android 项目与构建](android/README.md)
 - [私有 SDK 适配状态和边界](docs/SDK_INTEGRATION_STATUS.md)
 - [私有红外版本构建与手机操作](android/GUIDE_IR_BUILD.md)
+- [Camera2 / 双路独立预览源码阶段](android/DUAL_PREVIEW.md)
 - [完整融合接入与验收计划](docs/ANDROID_INTEGRATION.md)
 - [真实采集协议](docs/CAPTURE_PROTOCOL.md)
 - [原厂 demo 保存位置](docs/STOCK_DEMO_STORAGE.md)
