@@ -1,0 +1,22 @@
+Validation scope: SDK-neutral synthetic offline reference, version 0.1.0
+
+Passed on Python 3.12.14:
+- Editable package build/install: uv pip install -e '.[test]'
+- Syntax compilation: python -m compileall -q thermal_fusion tests
+- Automated tests: 85 passed
+- Automatic synthetic target calibration: translation, rotation, perspective
+- Independent synthetic noise capture; both thermal contrast polarities
+- Fixture failure paths and unchanged raw/temperature data
+- Visual inspection of generated three-panel synthetic preview
+- Independent code review of geometry/validation/immutability failure paths
+
+Not run / not established:
+- Android build or APK installation
+- Vendor SDK/ABI/API/license inspection
+- Actual USB capture, clock synchronization or performance
+- Real dual-modal target detectability
+- Real lens distortion, camera calibration or component heat-source localization
+- Temperature accuracy
+
+Metrics and complete test log are in outputs/.
+The illustrative pinhole parallax values are model calculations, not rig measurements.
