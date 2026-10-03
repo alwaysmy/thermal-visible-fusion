@@ -12,7 +12,8 @@ Experimental fixed-plane registration of a USB thermal camera and an Android rea
 | 纯红外、可见光透明叠加、可见光边缘 | 已实现离线参考 |
 | 几何配置绑定、不同步/过期拒绝、原始值保护 | 已实现离线参考 |
 | Android 标准相册保存和应用骨架 | 实现中，尚未验证 APK |
-| 厂商 SDK 接入和原厂 demo 存储分析 | 静态检查中，厂商文件不在仓库 |
+| 原厂 demo 存储分析 | 已查明目标版本路径，见下方文档 |
+| 厂商 SDK 接入 | 已确认接口与 ARM ABI；适配实现中，厂商文件不在仓库 |
 | 手机硬件采集、真实标定、定位精度和测温 | 尚未验证 |
 
 ## 运行离线核心
@@ -36,7 +37,7 @@ Android 实现采用以下约定：
 - 原始帧、温度和诊断数据：只在有真实 SDK 数据时提供明确导出，由用户通过系统文件选择器选择目标；不把私有目录当成用户能直接找到的保存位置
 - 保存失败必须报告，写到一半的内容要清理，不能提前提示保存成功
 
-原厂 demo 实际路径待静态检查结果，不能假定它遵守同样约定。
+原厂 demo 的已查明路径和找不到照片的原因见[存储分析](docs/STOCK_DEMO_STORAGE.md)。
 
 ## 关键限制
 
@@ -51,6 +52,7 @@ Android 实现采用以下约定：
 - [离线参考说明](docs/REFERENCE_README.md)
 - [Android 接入与验收](docs/ANDROID_INTEGRATION.md)
 - [真实采集协议](docs/CAPTURE_PROTOCOL.md)
+- [原厂 demo 保存位置](docs/STOCK_DEMO_STORAGE.md)
 - [验证范围](VALIDATION.txt)
 - [第三方依赖与厂商文件边界](THIRD_PARTY.md)
 
